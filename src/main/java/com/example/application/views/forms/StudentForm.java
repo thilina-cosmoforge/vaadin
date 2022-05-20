@@ -5,6 +5,7 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
@@ -26,7 +27,6 @@ import java.time.ZoneId;
 public class StudentForm extends VerticalLayout {
 
     DatePicker.DatePickerI18n singleFormatI18n = new DatePicker.DatePickerI18n();
-    //https://dcstatic.com/images/brandcrowd/logos/brandcrowd-logo-5d59400c52.svg
     Image logo = new Image(
             "https://dcstatic.com/images/brandcrowd/logos/brandcrowd-logo-5d59400c52.svg",
             "logo");
@@ -42,7 +42,7 @@ public class StudentForm extends VerticalLayout {
     ComboBox<String> nationality = new ComboBox<>("Nationality");
     ComboBox<String> house = new ComboBox<>("House");
     IntegerField insuranceNo = new IntegerField("Insurance No.");
-    ComboBox<String> formerSchool = new ComboBox<>("House");
+    ComboBox<String> formerSchool = new ComboBox<>("Previous School");
     NumberField distance = new NumberField("Distance");
     ComboBox<String> transport = new ComboBox<>("Mode of Transmission");
     IntegerField BirthCertNo = new IntegerField("Birth Certificate No.");
@@ -50,8 +50,13 @@ public class StudentForm extends VerticalLayout {
     private final Button create_btn;
     private final NativeButton cancel_btn;
 
-    //https://dcstatic.com/images/brandcrowd/logos/brandcrowd-logo-5d59400c52.svg
+
+
+
+
+
     public StudentForm() {
+
         logo.setMaxHeight(100, Unit.PIXELS);
         firstName.setPrefixComponent(VaadinIcon.USER.create());
         FormLayout names = new FormLayout();
@@ -66,6 +71,14 @@ public class StudentForm extends VerticalLayout {
         admissionNo.setHelperText("school index no");
         admissionDate.setI18n(singleFormatI18n);
         admissionDate.setValue(LocalDate.now(ZoneId.systemDefault()));
+        religion.setItems("Buddhist", "Christian", "Catholic", "Islam");
+        nationality.setItems("Sri Lankan");
+        house.setItems("house1","house2","house3","house4");
+        insuranceNo.setHelperText("digits");
+        formerSchool.setItems("List of popular schools");
+        distance.setHelperText("distance from residence (Km)");
+        transport.setItems("Bus", "School Van", "MotorBike","Bicycle", "Car", "Three Wheeler");
+        BirthCertNo.setMax(10);
 //      email.setSuffixComponent(new Div(new Text("@gmail.com")));
         FormLayout formLayoutStudent = new FormLayout();
         formLayoutStudent.add(
@@ -90,7 +103,7 @@ public class StudentForm extends VerticalLayout {
                 // Use two columns, if layout's width exceeds 500px
                 new FormLayout.ResponsiveStep("500px", 2)
         );
-//        formLayoutStudent.getStyle().set("background-color", "hsla(219, 25%, 20%, 5%");
+
         H1 h1 = new H1("Register Student");
         HorizontalLayout bottomButtons = new HorizontalLayout();
         create_btn = new Button("Create");
@@ -104,13 +117,23 @@ public class StudentForm extends VerticalLayout {
                 cancel_btn
         );
 
+
+        Details student = new Details("Student",
+                formLayoutStudent
+        );
+        Details parent = new Details("Parents", new TextField("parent"));
+
+        Details contacts = new Details("Contacts", new TextField("parent"));
+
         this.getClassNames().add("v-form");
         setMargin(true);
-        this.setAlignItems(Alignment.CENTER);
+//        this.setAlignItems(Alignment.CENTER);
         add(
                 logo,
                 h1,
-                formLayoutStudent,
+                student,
+                parent,
+                contacts,
                 bottomButtons
         );
     }
