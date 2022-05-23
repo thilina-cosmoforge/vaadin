@@ -1,7 +1,10 @@
+:root{
+    --main-color: red;
+}
 
 html,
 :host {
-        --lumo-base-color: hsl(218, 25%, 6%);
+        --lumo-base-color: hsl(0, 0%, 7%);
         --lumo-tint-5pct: hsla(218, 65%, 85%, 0.06);
         --lumo-tint-10pct: hsla(218, 60%, 80%, 0.14);
         --lumo-tint-20pct: hsla(218, 64%, 82%, 0.23);
@@ -44,7 +47,7 @@ html,
         --lumo-primary-color-50pct: hsla(350, 89%, 80%, 0.69);
         --lumo-primary-color-10pct: hsla(350, 89%, 65%, 0.13);
         --lumo-primary-text-color: hsl(350, 89%, 53%);
-        --lumo-primary-contrast-color: #fff;
+        --lumo-primary-contrast-color: #000;
         --lumo-error-color: hsl(3, 79%, 49%);
         --lumo-error-color-50pct: hsla(3, 75%, 62%, 0.5);
         --lumo-error-color-10pct: hsla(3, 75%, 62%, 0.14);
@@ -53,13 +56,12 @@ html,
         --lumo-success-color-50pct: hsla(145, 92%, 51%, 0.5);
         --lumo-success-color-10pct: hsla(145, 92%, 51%, 0.1);
         --lumo-success-text-color: hsl(145, 85%, 46%);
-  /*background-image: url(https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80);*/
 }
 
 .v-form {
   max-width: 50%;
   margin-left: 20%;
-  background-color: #273041;
+  background-color: hsl(0, 0%, 13%);
   padding: 5%;
   border-radius: 1em;
   border: 1px solid #000;

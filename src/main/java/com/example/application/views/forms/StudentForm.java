@@ -1,18 +1,26 @@
 package com.example.application.views.forms;
 
+import com.example.application.views.components.ContactField;
 import com.example.application.views.components.ProfileImage;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -21,6 +29,8 @@ import com.vaadin.flow.router.Route;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @PageTitle("New Student")
 @Route(value = "newStudent")
@@ -104,7 +114,7 @@ public class StudentForm extends VerticalLayout {
                 new FormLayout.ResponsiveStep("500px", 2)
         );
 
-        H1 h1 = new H1("Register Student");
+
         HorizontalLayout bottomButtons = new HorizontalLayout();
         create_btn = new Button("Create");
         cancel_btn = new NativeButton("Cancel");
@@ -117,24 +127,119 @@ public class StudentForm extends VerticalLayout {
                 cancel_btn
         );
 
+        FormLayout formLayoutParent = new FormLayout();
+        ComboBox<String> guardianType = new ComboBox<>("Guardian");
+        guardianType.setItems("Father","Mother","Guardian");
+        TextField nic = new TextField("NIC");
+        TextField nameWithIN_P = new TextField();
+        TextField firstName_P = new TextField("First name");
+        TextField middleName_P = new TextField("Middle Name");
+        TextField surName_P = new TextField("Last Name");
 
-        Details student = new Details("Student",
-                formLayoutStudent
+        FormLayout address_P = new FormLayout();
+        TextField street1 = new TextField("Street1");
+        TextField street2 = new TextField("Street2");
+        TextField district = new TextField("District");
+        address_P.add(
+                street1,
+                street2,
+                district
         );
-        Details parent = new Details("Parents", new TextField("parent"));
+        ComboBox<String> occupation = new ComboBox<>("Occupation");
+        formLayoutParent.add(
+                guardianType,
+                nic,
+                firstName_P,
+                middleName_P,
+                surName_P,
+                nameWithIN_P,
+                occupation
+        );
 
-        Details contacts = new Details("Contacts", new TextField("parent"));
 
+        Details student = new Details("Student", formLayoutStudent);
+        Details parent = new Details("Parents", formLayoutParent);
+
+
+        Text addText = new Text("Add New Contact");
+        Button plusButton = new Button(new Icon(VaadinIcon.PLUS));
+        Button remove = new Button(new Icon(VaadinIcon.MINUS));
+        plusButton.addThemeVariants(ButtonVariant.LUMO_ICON);
+        plusButton.getElement().setAttribute("aria-label", "Add Contact");
+
+        VerticalLayout formLayoutContact = new VerticalLayout();
+        Details contacts = new Details("Contacts", formLayoutContact);
+
+        ArrayList<ContactField> inputs = new ArrayList<>();
+
+        Div in = new Div();
+
+        formLayoutContact.add(
+                addText,
+                plusButton,
+                in,
+                address_P
+        );
+
+        ContactField in1 = new ContactField();
+        ContactField in2 = new ContactField();
+        ContactField in3 = new ContactField();
+        ContactField in4 = new ContactField();
+        inputs.add(in1);
+        inputs.add(in2);
+        inputs.add(in3);
+        inputs.add(in4);
+
+        final int[] a = {-1};
+        plusButton.addClickListener(e -> {
+            a[0]++;
+            if(a[0] < 5){
+                addText.setText(Arrays.toString(a));
+                in.add(inputs.get(a[0]));
+                inputs.get(a[0]).getElement().setAttribute("aria-label", Arrays.toString(a));
+            }
+        });
+
+
+        in1.remBTN.addClickListener(e -> {
+            in1.removeAll();
+            notify("removed 1");
+            a[0]--;
+        });
+        in2.remBTN.addClickListener(e -> {
+            in2.removeAll();
+            notify("removed 2");
+            a[0]--;
+        });
+        in3.remBTN.addClickListener(e -> {
+            in3.removeAll();
+            notify("removed 3");
+            a[0]--;
+        });
+        in4.remBTN.addClickListener(e -> {
+            in4.removeAll();
+            notify("removed 4");
+            a[0]--;
+        });
+
+        Details addresses = new Details("Address", address_P);
+        H1 h1 = new H1("Register Student");
         this.getClassNames().add("v-form");
         setMargin(true);
-//        this.setAlignItems(Alignment.CENTER);
         add(
                 logo,
                 h1,
                 student,
                 parent,
                 contacts,
+                addresses,
                 bottomButtons
+
         );
+
+    }
+    void notify(String ms){
+        Notification notification = Notification.show(ms);
+        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
     }
 }
