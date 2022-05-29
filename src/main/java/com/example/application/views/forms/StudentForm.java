@@ -1,7 +1,10 @@
 package com.example.application.views.forms;
 
+import com.example.application.domain.Student;
+import com.example.application.domain.weak.FullName;
 import com.example.application.views.components.ContactField;
 import com.example.application.views.components.ProfileImage;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -13,7 +16,6 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -24,6 +26,10 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.converter.StringToFloatConverter;
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.converter.StringToLongConverter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -31,6 +37,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.function.LongToIntFunction;
 
 @PageTitle("New Student")
 @Route(value = "newStudent")
@@ -43,6 +50,7 @@ public class StudentForm extends VerticalLayout {
     ProfileImage userImage = new ProfileImage();
     TextField admissionNo = new TextField();
     DatePicker admissionDate = new DatePicker("Date of Admission");
+
     TextField firstName = new TextField("First name");
     TextField middleName = new TextField("Middle Name");
     TextField surName = new TextField("Last Name");
@@ -51,21 +59,18 @@ public class StudentForm extends VerticalLayout {
     ComboBox<String> religion = new ComboBox<>("Religion");
     ComboBox<String> nationality = new ComboBox<>("Nationality");
     ComboBox<String> house = new ComboBox<>("House");
-    IntegerField insuranceNo = new IntegerField("Insurance No.");
+    TextField insuranceNo = new TextField("Insurance No.");
     ComboBox<String> formerSchool = new ComboBox<>("Previous School");
-    NumberField distance = new NumberField("Distance");
+    ComboBox<String> admissionGrade = new ComboBox<>("Class");
+    ComboBox<String> clasCategory = new ComboBox<>("Class Category");
+    TextField distance = new TextField("Distance");
     ComboBox<String> transport = new ComboBox<>("Mode of Transmission");
-    IntegerField BirthCertNo = new IntegerField("Birth Certificate No.");
-
+    TextField BirthCertNo = new TextField("Birth Certificate No.");
     private final Button create_btn;
-    private final NativeButton cancel_btn;
-
-
-
-
-
+    private final Button cancel_btn;
 
     public StudentForm() {
+// =========================================================================================================================================
 
         logo.setMaxHeight(100, Unit.PIXELS);
         firstName.setPrefixComponent(VaadinIcon.USER.create());
@@ -88,7 +93,6 @@ public class StudentForm extends VerticalLayout {
         formerSchool.setItems("List of popular schools");
         distance.setHelperText("distance from residence (Km)");
         transport.setItems("Bus", "School Van", "MotorBike","Bicycle", "Car", "Three Wheeler");
-        BirthCertNo.setMax(10);
 //      email.setSuffixComponent(new Div(new Text("@gmail.com")));
         FormLayout formLayoutStudent = new FormLayout();
         formLayoutStudent.add(
@@ -101,6 +105,7 @@ public class StudentForm extends VerticalLayout {
                 house,
                 insuranceNo,
                 formerSchool,
+                clasCategory,
                 distance,
                 transport,
                 BirthCertNo
@@ -117,7 +122,7 @@ public class StudentForm extends VerticalLayout {
 
         HorizontalLayout bottomButtons = new HorizontalLayout();
         create_btn = new Button("Create");
-        cancel_btn = new NativeButton("Cancel");
+        cancel_btn = new Button("Cancel");
         cancel_btn.addClickListener(e ->
                 cancel_btn.getUI().ifPresent(ui ->
                         ui.navigate(""))
@@ -236,6 +241,7 @@ public class StudentForm extends VerticalLayout {
                 bottomButtons
 
         );
+
 
     }
     void notify(String ms){

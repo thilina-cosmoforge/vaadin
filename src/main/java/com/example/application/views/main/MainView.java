@@ -1,6 +1,7 @@
 package com.example.application.views.main;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -14,6 +15,8 @@ public class MainView extends HorizontalLayout {
     private TextField name;
     private Button sayHello;
 
+    private Button cancel_btn;
+
     public MainView() {
         name = new TextField("Your name");
         sayHello = new Button("Say hello");
@@ -21,10 +24,16 @@ public class MainView extends HorizontalLayout {
             Notification.show("Hello " + name.getValue());
         });
 
+        cancel_btn = new Button("Add New");
+        cancel_btn.addClickListener(e ->
+                cancel_btn.getUI().ifPresent(ui ->
+                        ui.navigate(""))
+        );
+
         setMargin(true);
         setVerticalComponentAlignment(Alignment.END, name, sayHello);
 
-        add(name, sayHello);
+        add(name, sayHello, cancel_btn);
     }
 
 }

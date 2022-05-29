@@ -1,6 +1,6 @@
 package com.example.application.controller;
 
-import com.example.application.services.StudentService;
+import com.example.application.services.IStudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -12,5 +12,5 @@ public class StudentController {
     private String uploadFolder;
 
     @Autowired
-    private StudentService studentService;
+    private IStudentService IStudentService;
 }
