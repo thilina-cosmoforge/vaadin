@@ -15,7 +15,6 @@ public class StudentService implements IStudentService {
 
     @Autowired
     private StudentRepository studentRepository;
-
     @Autowired
     public ModelMapper modelMapper;
 
@@ -24,12 +23,6 @@ public class StudentService implements IStudentService {
         return Files.readAllBytes(file.toPath());
     }
 
-//    @Override
-//    public List<Student> save(List<Student> students) {
-//        List<com.example.application.entity.Student> saveStudents = students.stream().map(s -> modelMapper.map(s, com.example.application.entity.Student.class)).collect(Collectors.toList());
-//        saveStudents.forEach(student -> studentRepository.save(student));
-//        return saveStudents.stream().map(s -> modelMapper.map(s, Student.class)).collect(Collectors.toList());
-//    }
 
     @Override
     @Transactional

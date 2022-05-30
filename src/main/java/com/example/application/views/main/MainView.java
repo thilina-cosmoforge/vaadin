@@ -27,7 +27,7 @@ public class MainView extends HorizontalLayout {
         cancel_btn = new Button("Add New");
         cancel_btn.addClickListener(e ->
                 cancel_btn.getUI().ifPresent(ui ->
-                        ui.navigate(""))
+                        ui.navigate("newStudent"))
         );
 
         setMargin(true);
