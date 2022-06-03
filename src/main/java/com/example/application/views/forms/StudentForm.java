@@ -2,11 +2,8 @@ package com.example.application.views.forms;
 
 import com.example.application.domain.Parent;
 import com.example.application.domain.Student;
-import com.example.application.domain.weak.FullName;
 import com.example.application.services.IParentService;
 import com.example.application.services.IStudentService;
-import com.example.application.services.ParentService;
-import com.example.application.services.StudentService;
 import com.example.application.views.components.ContactField;
 import com.example.application.views.components.ProfileImage;
 import com.vaadin.flow.component.Text;
@@ -17,25 +14,29 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToFloatConverter;
 import com.vaadin.flow.data.converter.StringToLongConverter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.InputStreamFactory;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -51,6 +52,14 @@ public class StudentForm extends VerticalLayout {
     Image logo = new Image(
             "https://dcstatic.com/images/brandcrowd/logos/brandcrowd-logo-5d59400c52.svg",
             "logo");
+    Details studentSection;
+    VerticalLayout formLayoutContact;
+    FormLayout formLayoutStudent, formLayoutParent;
+    Div GuardianFormContainer;
+    FormLayout formFatherTab, formMotherTab, formGuardianTab;
+    Details parentSection;
+    Tab fatherTab, motherTab, guardianTab;
+    TextField guardianType;
 
     @Autowired
     private IParentService parentService;
@@ -58,11 +67,10 @@ public class StudentForm extends VerticalLayout {
     private IStudentService studentService;
 
     Binder<Student> studentBinder = new Binder<>(Student.class);
-    Binder<Parent> nameBinder = new Binder<>(Parent.class);
-    FullName fullName = new FullName();
+    Binder<Parent> parentBinder = new Binder<>(Parent.class);
     Student student = new Student();
-
-//  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    Parent parent = new Parent();
+//  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public StudentForm() {
         logo.setMaxHeight(100, Unit.PIXELS);
         H1 h1 = new H1("Register Student");
@@ -71,7 +79,7 @@ public class StudentForm extends VerticalLayout {
         singleFormatI18n.setDateFormat("yyyy-MM-dd");
 
         studentBinder.setBean(student);
-
+        parentBinder.setBean(parent);
 
         ProfileImage userImage = new ProfileImage();
         userImage.getStyle().set("margin-left", "20%");
@@ -188,7 +196,6 @@ public class StudentForm extends VerticalLayout {
                 .bind(Student::getAddressDistrict, Student::setAddressDistrict);
 //        email.setSuffixComponent(new Div(new Text("@gmail.com")));
 
-
         DatePicker admissionDate = new DatePicker("Date of Admission");
         admissionDate.setI18n(singleFormatI18n);
         admissionDate.setValue(LocalDate.now(ZoneId.systemDefault()));
@@ -205,7 +212,7 @@ public class StudentForm extends VerticalLayout {
         Button create_btn = new Button("Create");
         create_btn.addClickListener(e -> save());
         Button cancel_btn = new Button("Cancel");
-// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         FormLayout names = new FormLayout();
         names.add(
@@ -220,7 +227,7 @@ public class StudentForm extends VerticalLayout {
                 S_district
         );
 
-        FormLayout formLayoutStudent = new FormLayout();
+        formLayoutStudent = new FormLayout();
         formLayoutStudent.add(
                 userImage,
                 names,
@@ -240,6 +247,7 @@ public class StudentForm extends VerticalLayout {
                 BirthCertNo,
                 address_S
         );
+
         formLayoutStudent.setColspan(nameInitials, 2);
 //        formLayoutStudent.set(na/meInitials, 2);
         formLayoutStudent.setResponsiveSteps(
@@ -249,39 +257,104 @@ public class StudentForm extends VerticalLayout {
                 new FormLayout.ResponsiveStep("500px", 2)
         );
 
+        fatherTab = new Tab("Father");
+        motherTab = new Tab("Mother");
+        guardianTab = new Tab("Guardian");
+        Tabs guardianTypes = new Tabs(fatherTab, motherTab, guardianTab);
+        guardianTypes.addSelectedChangeListener(e -> {
+            setContent(e.getSelectedTab());
+        });
 
+        guardianType = new TextField("Guardian");
+        guardianType.setReadOnly(true);
+        parentBinder.forField(guardianType)
+                .bind(Parent::getType, Parent::setType);
 
 //       ////////////////////////////////////////////////////////////////////////////
-        ComboBox<String> guardianType = new ComboBox<>("Guardian");
-        guardianType.setItems("Father","Mother","Guardian");
-        TextField nic = new TextField("NIC");
-        TextField nameWithIN_P = new TextField();
-        TextField firstName_P = new TextField("First name");
-        TextField middleName_P = new TextField("Middle Name");
-        TextField surName_P = new TextField("Last Name");
-        TextField P_street1 = new TextField("Street1");
-        TextField P_street2 = new TextField("Street2");
-        TextField P_district = new TextField("District");
-        ComboBox<String> occupation = new ComboBox<>("Occupation");
-//////////////////////////////////////////////////////////////////////////////////////////
-        FormLayout address_P = new FormLayout();
-        address_P.add(
-                P_street1,
-                P_street2,
-                P_district
+        TextField nic_P_F = new TextField("NIC");
+        TextField nameWithIN_P_F = new TextField("Name With Initials");
+        TextField firstName_P_F = new TextField("First name");
+        TextField middleName_P_F = new TextField("Middle Name");
+        TextField surName_P_F = new TextField("Last Name");
+        TextField P_F_Street1 = new TextField("Street1");
+        TextField P_F_Street2 = new TextField("Street2");
+        TextField P_F_District = new TextField("District");
+        ComboBox<String> occupation_P_F = new ComboBox<>("Occupation");
+//       ////////////////////////////////////////////////////////////////////////////
+        //       ////////////////////////////////////////////////////////////////////////////
+        TextField nic_P_M = new TextField("NIC");
+        TextField nameWithIN_P_M = new TextField("Name With Initials");
+        TextField firstName_P_M = new TextField("First name");
+        TextField middleName_P_M = new TextField("Middle Name");
+        TextField surName_P_M = new TextField("Last Name");
+        TextField P_M_Street1 = new TextField("Street1");
+        TextField P_M_Street2 = new TextField("Street2");
+        TextField P_M_District = new TextField("District");
+        ComboBox<String> occupation_P_M = new ComboBox<>("Occupation");
+//       ////////////////////////////////////////////////////////////////////////////
+        //       ////////////////////////////////////////////////////////////////////////////
+        TextField nic_P_G = new TextField("NIC");
+        TextField nameWithIN_P_G = new TextField("Name With Initials");
+        TextField firstName_P_G = new TextField("First name");
+        TextField middleName_P_G = new TextField("Middle Name");
+        TextField surName_P_G = new TextField("Last Name");
+        TextField P_G_Street1 = new TextField("Street1");
+        TextField P_G_Street2 = new TextField("Street2");
+        TextField P_G_District = new TextField("District");
+        ComboBox<String> occupation_P_G = new ComboBox<>("Occupation");
+//       ////////////////////////////////////////////////////////////////////////////
+
+
+        FormLayout address_P_F = new FormLayout();
+        address_P_F.add(P_F_Street1, P_F_Street2, P_F_District);
+        formFatherTab = new FormLayout();
+        formFatherTab.add(
+                new H2("Father"),
+                nic_P_F,
+                firstName_P_F,
+                middleName_P_F,
+                surName_P_F,
+                nameWithIN_P_F,
+                occupation_P_F,
+                address_P_F
         );
-        FormLayout formLayoutParent = new FormLayout();
+        FormLayout address_P_M = new FormLayout();
+        address_P_M.add(P_M_Street1, P_M_Street2, P_M_District);
+        formMotherTab = new FormLayout();
+        formMotherTab.add(
+                new H2("Mother"),
+                nic_P_M,
+                firstName_P_M,
+                middleName_P_M,
+                surName_P_M,
+                nameWithIN_P_M,
+                occupation_P_M,
+                address_P_M
+        );
+        FormLayout address_P_G = new FormLayout();
+        address_P_G.add(P_G_Street1, P_G_Street2, P_G_District);
+        formGuardianTab = new FormLayout();
+        formGuardianTab.add(
+                new H2("Guardian"),
+                nic_P_G,
+                firstName_P_G,
+                middleName_P_G,
+                surName_P_G,
+                nameWithIN_P_G,
+                occupation_P_G,
+                address_P_G
+        );
+        GuardianFormContainer = new Div();
+        GuardianFormContainer.add(formFatherTab);
+        formLayoutParent = new FormLayout();
         formLayoutParent.add(
+                guardianTypes,
                 guardianType,
-                nic,
-                firstName_P,
-                middleName_P,
-                surName_P,
-                nameWithIN_P,
-                occupation
+                GuardianFormContainer
         );
-        Details student = new Details("Student", formLayoutStudent);
-        Details parent = new Details("Parents", formLayoutParent);
+
+        studentSection = new Details("Student", formLayoutStudent);
+        parentSection = new Details("Parents", formLayoutParent);
 
         Text addText = new Text("Add New Contact");
         Button plusButton = new Button(new Icon(VaadinIcon.PLUS));
@@ -295,12 +368,10 @@ public class StudentForm extends VerticalLayout {
         ArrayList<ContactField> inputs = new ArrayList<>();
 
         Div in = new Div();
-
         formLayoutContact.add(
                 addText,
                 plusButton,
-                in,
-                address_P
+                in
         );
 
         ContactField in1 = new ContactField();
@@ -321,7 +392,6 @@ public class StudentForm extends VerticalLayout {
                 inputs.get(a[0]).getElement().setAttribute("aria-label", Arrays.toString(a));
             }
         });
-
 
         in1.remBTN.addClickListener(e -> {
             in1.removeAll();
@@ -344,9 +414,6 @@ public class StudentForm extends VerticalLayout {
             a[0]--;
         });
 
-        Details addresses = new Details("Address", address_P);
-
-
         HorizontalLayout bottomButtons = new HorizontalLayout();
         cancel_btn.addClickListener(e ->
                 cancel_btn.getUI().ifPresent(ui ->
@@ -359,8 +426,8 @@ public class StudentForm extends VerticalLayout {
         add(
                 logo,
                 h1,
-                student,
-                parent,
+                studentSection,
+                parentSection,
                 contacts,
                 bottomButtons
         );
@@ -378,5 +445,31 @@ public class StudentForm extends VerticalLayout {
     void notify(String ms){
         Notification notification = Notification.show(ms);
         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+    }
+
+    private void setContent(Tab tab) {
+        GuardianFormContainer.removeAll();
+
+        if (tab.equals(fatherTab)) {
+            guardianType.setValue("Father");
+            GuardianFormContainer.add(formFatherTab);
+        } else if (tab.equals(motherTab)) {
+            guardianType.setValue("Mother");
+            GuardianFormContainer.add(formMotherTab);
+        } else {
+            guardianType.setValue("Guardian");
+            GuardianFormContainer.add(formGuardianTab);
+        }
+    }
+
+    private Image convertToImage(byte[] imageData)
+    {
+        StreamResource streamResource = new StreamResource("isr", new InputStreamFactory() {
+            @Override
+            public InputStream createInputStream() {
+                return new ByteArrayInputStream(imageData);
+            }
+        });
+        return new Image(streamResource, "photo");
     }
 }

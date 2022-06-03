@@ -1,13 +1,9 @@
 package com.example.application.entity;
 
 import com.example.application.AbstractEntity;
-import com.example.application.entity.weak.Address;
-import com.example.application.entity.weak.FullName;
 import lombok.Data;
-
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Entity(name = "PARENT")
@@ -32,6 +28,9 @@ public class Parent extends AbstractEntity {
     private String addressStreet2;
     @Column(name = "ADDRESS_STREET2")
     private String addressDistrict;
+
+    @Column(name = "GUARDIAN_TYPE")
+    private String type;
 
     @OneToMany(cascade=CascadeType.ALL)
     @JoinColumn(name = "NIC_NUMBER")

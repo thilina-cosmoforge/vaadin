@@ -1,14 +1,10 @@
 package com.example.application.entity;
 
 import com.example.application.AbstractEntity;
-import com.example.application.entity.weak.Address;
-import com.example.application.entity.weak.ExtraCurricularActivities;
-import com.example.application.entity.weak.FullName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -74,12 +70,14 @@ public class Student extends AbstractEntity {
     @Column(name = "EXTRA_ACTIVITY_STATUS")
     private String extraActivityStatus;
 
+
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] picture;
 
     @ManyToOne
     private Parent parents;
+
     @OneToMany(mappedBy="students", cascade = CascadeType.ALL)
     private List<TermTest> termTests;
     @OneToMany(mappedBy = "students",cascade = CascadeType.ALL)

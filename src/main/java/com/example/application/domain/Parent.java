@@ -28,6 +28,8 @@ public class Parent extends AbstractModel {
     private String addressStreet2;
     private String addressDistrict;
 
+    private String type;
+
     private String occupation;
     private List<Student> students;
 }
