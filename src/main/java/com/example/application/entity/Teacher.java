@@ -2,7 +2,9 @@ package com.example.application.entity;
 import com.example.application.AbstractEntity;
 import com.example.application.entity.weak.Address;
 import com.example.application.entity.weak.FullName;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
