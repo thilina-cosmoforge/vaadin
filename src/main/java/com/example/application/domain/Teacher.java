@@ -2,6 +2,7 @@ package com.example.application.domain;
 import com.example.application.domain.weak.Address;
 import com.example.application.domain.weak.FullName;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Teacher extends AbstractModel {
 
     private String teacherId;

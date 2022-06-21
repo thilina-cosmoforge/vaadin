@@ -43,6 +43,17 @@ public abstract class AbstractEntity {
         }
         return super.equals(other);
     }
-}
 
+    public class IdentifiedStorageObject {
+
+        @Id
+        @GeneratedValue
+        private Long id;
+
+        public Long getId() {
+            return id;
+        }
+
+    }
+}
 

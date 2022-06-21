@@ -12,13 +12,19 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "TEACHER")
 public class Teacher extends AbstractEntity {
+
 
     @Column(name = "TEACHER_ID", unique = true)
     private String teacherId;
     @Column(name = "NIC_NUMBER", unique = true)
     private String nicNumber;
+//
+//    @Column(nullable = true, length = 64)
+//    private String picture;
 
     @Column(name = "NAME_WITH_INITIALS")
     private String nameWithInitials;
@@ -37,9 +43,9 @@ public class Teacher extends AbstractEntity {
     @Column(name = "ADDRESS_STREET2")
     private String addressDistrict;
 
-    @OneToMany(cascade = CascadeType.ALL)
+
     @JoinColumn(name = "NIC_NUMBER")
-    private Set<TeacherContact> teacherContacts;
+    private String teacherNic;
 
     @Column(name = "TEACHER_GRADE")
     private String teacherGrade;
@@ -52,9 +58,22 @@ public class Teacher extends AbstractEntity {
     @Column(name = "DATE_PENSION")
     private LocalDate datePension;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] picture;
+
+    @OneToMany(
+            mappedBy = "teacher",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<TeacherContact> teacherContact;
+
     @ManyToMany(mappedBy = "teachers")
     List<Student> students;
 
     @ManyToMany(mappedBy = "teachers")
     List<Subject> subjects;
+
+
 }
